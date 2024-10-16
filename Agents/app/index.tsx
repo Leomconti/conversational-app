@@ -22,7 +22,7 @@ export default function Index() {
   const ws = useRef<WebSocket | null>(null)
 
   useEffect(() => {
-    const userId = '281470212954652675'
+    const userId = '281470212954652675' // leo discord id so that we don't need onboarding
     ws.current = new WebSocket(`wss://agents.leomconti.com.br/sockets/chat/${userId}`)
 
     ws.current.onopen = () => {
