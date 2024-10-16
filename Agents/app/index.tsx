@@ -11,6 +11,8 @@ import {
   Send
 } from 'react-native-gifted-chat'
 
+const chatbotAvatar = require('@/assets/images/chatbot-avatar.png')
+
 interface ChatMessage extends IMessage {
   user: User
 }
@@ -27,7 +29,7 @@ export default function Index() {
         user: {
           _id: 2,
           name: 'ChatBot',
-          avatar: 'https://placeimg.com/140/140/tech'
+          avatar: chatbotAvatar
         }
       }
     ])
@@ -42,7 +44,7 @@ export default function Index() {
         user: {
           _id: 2,
           name: 'ChatBot',
-          avatar: 'https://placeimg.com/140/140/tech'
+          avatar: chatbotAvatar
         }
       }
       setMessages((previousMessages) => GiftedChat.append(previousMessages, [botResponse]))
