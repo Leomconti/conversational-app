@@ -95,13 +95,6 @@ export default function Index() {
           margin: 10
         }}
         primaryStyle={{ alignItems: 'center' }}
-        textInputStyle={{
-          color: '#4B0082',
-          backgroundColor: '#E6E6FA',
-          borderRadius: 15,
-          paddingHorizontal: 12,
-          marginRight: 10
-        }}
       />
     )
   }
@@ -126,9 +119,9 @@ export default function Index() {
           renderInputToolbar={renderInputToolbar}
           alwaysShowSend
           renderSend={(props) => (
-            <Send {...props}>
+            <Send {...props} containerStyle={styles.sendContainer}>
               <View style={styles.sendButton}>
-                <Text style={styles.sendButtonText}>➤</Text>
+                <Text style={styles.sendButtonText}>Send</Text>
               </View>
             </Send>
           )}
@@ -147,17 +140,21 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(138, 43, 226, 0.1)'
   },
-  sendButton: {
+  sendContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'flex-end',
+    marginBottom: 5
+  },
+  sendButton: {
     backgroundColor: '#8A2BE2',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 5
+    borderRadius: 15,
+    paddingVertical: 8,
+    paddingHorizontal: 12
   },
   sendButtonText: {
     color: '#FFFFFF',
-    fontSize: 20
+    fontSize: 14,
+    fontWeight: 'bold'
   }
 })
