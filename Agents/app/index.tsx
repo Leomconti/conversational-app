@@ -39,7 +39,7 @@ export default function Index() {
           text: data.content,
           createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
           user: {
-            _id: data.user_id || 2,
+            _id: data.user_id || 2, // interesting for multiplayer, have user id names etc all dynamic from the message
             name: data.user_name || 'Psyche',
             avatar: chatbotAvatar
           }
