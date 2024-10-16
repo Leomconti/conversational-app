@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { View, Platform, KeyboardAvoidingView, SafeAreaView } from 'react-native'
+import { View, Platform, KeyboardAvoidingView, SafeAreaView, Text, StyleSheet } from 'react-native'
 import {
   GiftedChat,
   Bubble,
@@ -60,10 +60,14 @@ export default function Index() {
         {...props}
         wrapperStyle={{
           right: {
-            backgroundColor: '#007AFF'
+            backgroundColor: '#8A2BE2',
+            borderRadius: 15,
+            padding: 5
           },
           left: {
-            backgroundColor: '#E5E5EA'
+            backgroundColor: '#9370DB',
+            borderRadius: 15,
+            padding: 5
           }
         }}
         textStyle={{
@@ -71,7 +75,7 @@ export default function Index() {
             color: '#FFFFFF'
           },
           left: {
-            color: '#000000'
+            color: '#FFFFFF'
           }
         }}
       />
@@ -83,22 +87,35 @@ export default function Index() {
       <InputToolbar
         {...props}
         containerStyle={{
-          backgroundColor: '#F5F5F5',
+          backgroundColor: '#F8F4FF',
           borderTopWidth: 1,
-          borderTopColor: '#E0E0E0',
-          padding: 8
+          borderTopColor: '#9370DB',
+          padding: 8,
+          borderRadius: 20,
+          margin: 10
+        }}
+        primaryStyle={{ alignItems: 'center' }}
+        textInputStyle={{
+          color: '#4B0082',
+          backgroundColor: '#E6E6FA',
+          borderRadius: 15,
+          paddingHorizontal: 12,
+          marginRight: 10
         }}
       />
     )
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#2E0854' }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       >
+        <View style={styles.backgroundContainer}>
+          <View style={styles.backgroundOverlay} />
+        </View>
         <GiftedChat
           messages={messages}
           onSend={(messages: ChatMessage[]) => onSend(messages)}
@@ -108,8 +125,39 @@ export default function Index() {
           renderBubble={renderBubble}
           renderInputToolbar={renderInputToolbar}
           alwaysShowSend
+          renderSend={(props) => (
+            <Send {...props}>
+              <View style={styles.sendButton}>
+                <Text style={styles.sendButtonText}>➤</Text>
+              </View>
+            </Send>
+          )}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  backgroundContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#2E0854'
+  },
+  backgroundOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(138, 43, 226, 0.1)'
+  },
+  sendButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#8A2BE2',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 5
+  },
+  sendButtonText: {
+    color: '#FFFFFF',
+    fontSize: 20
+  }
+})
