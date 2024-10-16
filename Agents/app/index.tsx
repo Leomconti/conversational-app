@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { View, Platform, KeyboardAvoidingView, SafeAreaView, Text, StyleSheet } from 'react-native'
 import {
   GiftedChat,
@@ -19,42 +19,69 @@ interface ChatMessage extends IMessage {
 
 export default function Index() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
+  const ws = useRef<WebSocket | null>(null)
 
   useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: "Welcome to the chat! I'm a mock bot that will echo your messages.",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: 'ChatBot',
-          avatar: chatbotAvatar
+    const userId = '281470212954652675'
+    ws.current = new WebSocket(`wss://agents.leomconti.com.br/sockets/chat/${userId}`)
+
+    ws.current.onopen = () => {
+      console.log('WebSocket connection opened')
+    }
+
+    ws.current.onmessage = (e) => {
+      const data = JSON.parse(e.data)
+      console.log('Received message:', data)
+
+      if (data.type === 'message') {
+        const message: ChatMessage = {
+          _id: data._id || Math.round(Math.random() * 1000000),
+          text: data.content,
+          createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+          user: {
+            _id: data.user_id || 2,
+            name: data.user_name || 'Psyche',
+            avatar: chatbotAvatar
+          }
         }
+        setMessages((previousMessages) => GiftedChat.append(previousMessages, [message]))
+      } else if (data.type === 'system') {
+        // Handle system messages
+      } else if (data.type === 'sync') {
+        // Handle sync messages if necessary
+      } else {
+        console.warn('Unknown message type:', data.type)
       }
-    ])
+    }
+
+    ws.current.onerror = (e: Event) => {
+      console.error('WebSocket error:', (e as ErrorEvent).message)
+    }
+
+    ws.current.onclose = () => {
+      console.log('WebSocket connection closed')
+    }
+
+    return () => {
+      ws.current?.close()
+    }
   }, [])
 
-  const mockSendMessage = (message: ChatMessage[]): void => {
-    setTimeout(() => {
-      const botResponse: ChatMessage = {
-        _id: Math.round(Math.random() * 1000000),
-        text: `You said: "${message[0].text}"`,
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: 'ChatBot',
-          avatar: chatbotAvatar
-        }
-      }
-      setMessages((previousMessages) => GiftedChat.append(previousMessages, [botResponse]))
-    }, 1000)
-  }
-
-  const onSend = useCallback((newMessages: ChatMessage[] = []) => {
+  const onSend = (newMessages: ChatMessage[] = []) => {
     setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages))
-    mockSendMessage(newMessages)
-  }, [])
+
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      newMessages.forEach((msg) => {
+        const messageToSend = {
+          type: 'message',
+          content: msg.text
+        }
+        ws.current?.send(JSON.stringify(messageToSend))
+      })
+    } else {
+      console.error('WebSocket is not open')
+    }
+  }
 
   const renderBubble = (props: BubbleProps<ChatMessage>) => {
     return (
@@ -113,7 +140,7 @@ export default function Index() {
         </View>
         <GiftedChat
           messages={messages}
-          onSend={(messages: ChatMessage[]) => onSend(messages)}
+          onSend={onSend}
           user={{
             _id: 1
           }}
